@@ -25,7 +25,7 @@ class RandomNumberTCGGenerator:
         for i in range(0,self.n):
             self.zi = self.countWithTCGMethod(self.zi)
             randomIntegerNumbers.append(self.zi)
-        
+
         return randomIntegerNumbers
 
     def resultUniformTCGMethod(self,modulo):
@@ -53,29 +53,59 @@ class RandomNumberGenerator:
     # m = modulus(modulo)
     # z0 = kunci pembangkit / seed
     # n = jumlah deret
-    # randomIntegerNumbers
+
     def __init__(self):
-        a = 2
-        c = 7
-        m = 10
+        a = 913
+        c = 112
+        m = 10000
         z0 = 2
-        n = 10
-        tcg = RandomNumberTCGGenerator(a,c,m,z0,n)
+        n = 300
+        self.initilize(a,c,m,z0,n)
+        tcg = RandomNumberTCGGenerator(self.a,self.c,self.m,self.z0,self.n)
         self.randomNumbers = tcg.getRandomNumbers()
     
+    def initilize(self,a,c,m,z0,n):
+        self.a = a
+        self.c = c
+        self.m = m 
+        self.z0 = m
+        self.n = n
+
     def getRandomTCGRandomNumbers(self):
         return self.randomNumbers
     
     def generateRandomTCGTableNumbers(self):
-        randomNumbers = self.getRandomTCGRandomNumbers()
-        print("i \t\t zi \t\t Ui \t\t")
-        # for r in randomNumbers:
-            # print(str(r[2]))
-            # i = 1
-            # print(str(i) +" \t\t "+r)
-            # i = i+1
-        
-        
+        if (self.a < self.m and self.c < self.m):
+            randomNumbers = self.getRandomTCGRandomNumbers()
+            n = self.n
+
+            ZiRandomNumbers = randomNumbers[0]
+            UiRandomNumbers = randomNumbers[1]
+            ZiLoopedPosition = self.periodikCheck(ZiRandomNumbers)
+            UiLoopedPosition = self.periodikCheck(UiRandomNumbers)
+            
+            if (ZiLoopedPosition + UiLoopedPosition) > 0:
+                print("Zi terulang di posisi "+str(ZiLoopedPosition))
+                print("Ui terulang di posisi "+str(UiLoopedPosition))
+            else: 
+                print("|  i\t|   Zi\t |    Ui    |")
+                for i in range(0,n):
+                    print("|  {}\t| {:.0f} \t | {:.4f}".format(i+1, randomNumbers[0][i], randomNumbers[1][i])
+                        + "   |"
+                        )
+        else:
+            print("Seharusnya a < m dan c < m")        
+
+    def periodikCheck(self,numbers):
+        loopedPosition = 0
+        tempNumber = numbers[0]
+        for i in range(1,len(numbers)):
+            if (numbers[i] == tempNumber):
+                loopedPosition = i+1
+                break
+
+        return loopedPosition
+
+
 rng = RandomNumberGenerator()
-print(rng.getRandomTCGRandomNumbers())
 rng.generateRandomTCGTableNumbers()
