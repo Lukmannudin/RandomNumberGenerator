@@ -1,4 +1,4 @@
-class RandomNumberTCGGenerator:
+class RandomNumberLCGGenerator:
     def __init__(self, a, c, m, z0, n):
         self.a = a
         self.c = c
@@ -7,44 +7,36 @@ class RandomNumberTCGGenerator:
         self.n = n
         self.randomNumbersIntegerAndUniform = []
 
-    def checkVariable(self):
-        print("ABC")
-        print("a = "+str(self.a))
-        print("c = "+str(self.c))
-        print("m = "+str(self.m))
-        print("z0 = "+str(self.zi))
-        print("n = "+str(self.n))
-
-    def countWithTCGMethod(self,zi):
+    def countWithLCGMethod(self,zi):
         # zi = nilai bilangan ke-i dari deretnya (RN yang baru)
         result = (self.a*zi+self.c) % self.m
         return result
     
-    def resultIntegerTCGMethod(self):
+    def resultIntegerLCGMethod(self):
         randomIntegerNumbers = []
         for i in range(0,self.n):
-            self.zi = self.countWithTCGMethod(self.zi)
+            self.zi = self.countWithLCGMethod(self.zi)
             randomIntegerNumbers.append(self.zi)
 
         return randomIntegerNumbers
 
-    def resultUniformTCGMethod(self,modulo):
+    def resultUniformLCGMethod(self):
         randomUniformNumbers = []
-        randomIntegerNumbers = self.resultIntegerTCGMethod()
+        randomIntegerNumbers = self.resultIntegerLCGMethod()
 
         for integerNumber in randomIntegerNumbers:
-            resultUniform = integerNumber / modulo
+            resultUniform = integerNumber / self.m
             randomUniformNumbers.append(resultUniform)
 
         return randomUniformNumbers
-
+    
     def getRandomNumbers(self):
-        randomNumbersTCG = [
-            self.resultIntegerTCGMethod(),
-            self.resultUniformTCGMethod(self.m),
-            self.n
+            
+        randomNumbersLCG = [
+            self.resultIntegerLCGMethod(),
+            self.resultUniformLCGMethod()
         ]
-        return randomNumbersTCG
+        return randomNumbersLCG
 
 
 class RandomNumberGenerator: 
@@ -54,44 +46,40 @@ class RandomNumberGenerator:
     # z0 = kunci pembangkit / seed
     # n = jumlah deret
 
-    def __init__(self):
-        a = 913
-        c = 112
-        m = 10000
-        z0 = 2
-        n = 300
+    def __init__(self,a,c,m,z0,n):
         self.initilize(a,c,m,z0,n)
-        tcg = RandomNumberTCGGenerator(self.a,self.c,self.m,self.z0,self.n)
-        self.randomNumbers = tcg.getRandomNumbers()
-    
+        self.LCGMethod = RandomNumberLCGGenerator(a,c,m,z0,n)
+        self.RVG = RandomVariateGenerator(self.LCGMethod.resultUniformLCGMethod())
+        
     def initilize(self,a,c,m,z0,n):
         self.a = a
         self.c = c
         self.m = m 
         self.z0 = m
         self.n = n
-
-    def getRandomTCGRandomNumbers(self):
-        return self.randomNumbers
-    
-    def generateRandomTCGTableNumbers(self):
+  
+    def generateRandomLCGTableNumbers(self):
         if (self.a < self.m and self.c < self.m):
-            randomNumbers = self.getRandomTCGRandomNumbers()
             n = self.n
-
+            randomNumbers = self.LCGMethod.getRandomNumbers()
+            randomNumbers.append(self.RVG.getResultCDF())
+            
             ZiRandomNumbers = randomNumbers[0]
             UiRandomNumbers = randomNumbers[1]
+            XiRandomNumbers = randomNumbers[2]
             ZiLoopedPosition = self.periodikCheck(ZiRandomNumbers)
             UiLoopedPosition = self.periodikCheck(UiRandomNumbers)
-            
-            if (ZiLoopedPosition + UiLoopedPosition) > 0:
+            XiLoopedPosition = self.periodikCheck(XiRandomNumbers)
+
+            if (ZiLoopedPosition + UiLoopedPosition + XiLoopedPosition) > 0:
                 print("Zi terulang di posisi "+str(ZiLoopedPosition))
                 print("Ui terulang di posisi "+str(UiLoopedPosition))
+                print("Xi terulang di posisi "+str(XiLoopedPosition))
             else: 
-                print("|  i\t|   Zi\t |    Ui    |")
+                print("|\ti\t|\tZi\t|\tUi\t|\tXi\t|")
                 for i in range(0,n):
-                    print("|  {}\t| {:.0f} \t | {:.4f}".format(i+1, randomNumbers[0][i], randomNumbers[1][i])
-                        + "   |"
+                    print("|\t{}\t|\t{:.0f}\t|\t{:.4f}\t|\t{:.4f}\t|"
+                        .format(i+1, randomNumbers[0][i], randomNumbers[1][i],randomNumbers[2][i])
                         )
         else:
             print("Seharusnya a < m dan c < m")        
@@ -106,6 +94,25 @@ class RandomNumberGenerator:
 
         return loopedPosition
 
+class RandomVariateGenerator:
+    def __init__(self, uniformNumbers):
+        self.uniformNumbers = uniformNumbers
+    
+    def getResultCDF(self):
+        cdfNumbers = []
+        for number in self.uniformNumbers:
+            result = None
+            result = ((9/4)*number**2)**(1/3)
+            cdfNumbers.append(result)
 
-rng = RandomNumberGenerator()
-rng.generateRandomTCGTableNumbers()
+        return cdfNumbers
+
+    
+
+a = 913
+c = 112
+m = 1000
+z0 = 10116347
+n = 10
+rng = RandomNumberGenerator(a,c,m,z0,n)
+rng.generateRandomLCGTableNumbers()
