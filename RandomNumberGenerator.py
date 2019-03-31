@@ -63,24 +63,23 @@ class RandomNumberGenerator:
             n = self.n
             randomNumbers = self.LCGMethod.getRandomNumbers()
             randomNumbers.append(self.RVG.getResultCDF())
-            
+             
             ZiRandomNumbers = randomNumbers[0]
             UiRandomNumbers = randomNumbers[1]
             XiRandomNumbers = randomNumbers[2]
             ZiLoopedPosition = self.periodikCheck(ZiRandomNumbers)
             UiLoopedPosition = self.periodikCheck(UiRandomNumbers)
             XiLoopedPosition = self.periodikCheck(XiRandomNumbers)
-
-            if (ZiLoopedPosition + UiLoopedPosition + XiLoopedPosition) > 0:
+            if (ZiLoopedPosition + UiLoopedPosition + XiLoopedPosition) > 0 :
                 print("Zi terulang di posisi "+str(ZiLoopedPosition))
                 print("Ui terulang di posisi "+str(UiLoopedPosition))
                 print("Xi terulang di posisi "+str(XiLoopedPosition))
-            else: 
-                print("|\ti\t|\tZi\t|\tUi\t|\tXi\t|")
-                for i in range(0,n):
-                    print("|\t{}\t|\t{:.0f}\t|\t{:.4f}\t|\t{:.4f}\t|"
-                        .format(i+1, randomNumbers[0][i], randomNumbers[1][i],randomNumbers[2][i])
-                        )
+
+            print("|\ti\t|\tZi\t|\tUi\t|\tXi\t|")
+            for i in range(0,n):
+                print("|\t{}\t|  {:.0f}\t\t|  {:.4f}\t|  {:.4f}\t|"
+                    .format(i+1, randomNumbers[0][i], randomNumbers[1][i],randomNumbers[2][i])
+                    )
         else:
             print("Seharusnya a < m dan c < m")        
 
@@ -109,10 +108,10 @@ class RandomVariateGenerator:
 
     
 
-a = 913
-c = 112
-m = 1000
+a = 221
+c = 23 
+m = 1201
 z0 = 10116347
-n = 10
+n = 300
 rng = RandomNumberGenerator(a,c,m,z0,n)
 rng.generateRandomLCGTableNumbers()
