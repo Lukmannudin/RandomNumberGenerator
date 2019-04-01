@@ -1,3 +1,7 @@
+# NIM : 10116347
+# Nama : Lukmannudin
+# Kelas : MOSI-08
+# Catatan : Dijalankan di python versi 3
 class RandomNumberLCGGenerator:
     def __init__(self, a, c, m, z0, n):
         self.a = a
@@ -14,9 +18,11 @@ class RandomNumberLCGGenerator:
     
     def resultIntegerLCGMethod(self):
         randomIntegerNumbers = []
-        for i in range(0,self.n):
+        i=0
+        while i <= self.n:
             self.zi = self.countWithLCGMethod(self.zi)
             randomIntegerNumbers.append(self.zi)
+            i = i +1
 
         return randomIntegerNumbers
 
