@@ -17,14 +17,14 @@ class RandomNumberMultiplicativeGenerator:
         result = (self.a*zi) % self.m
         return result
     
-    def resultUniformMultiplicativeMethod(self,numbers):
+    def resultUniformMultiplicativeMethod(self):
         randomUniformNumbers = []
         resultUniform = []
-
-        for numberPosition in range(0,len(numbers)):
-            resultUniform = numbers[numberPosition] / self.m
+        randomIntegerNumbers = self.resultIntegerMultiplicativeMethod()
+        for integerNumber in randomIntegerNumbers:
+            resultUniform = integerNumber / self.m
             randomUniformNumbers.append(resultUniform)
-        
+
         return randomUniformNumbers
     
     def resultIntegerMultiplicativeMethod(self):
@@ -38,10 +38,10 @@ class RandomNumberMultiplicativeGenerator:
         return randomIntegerNumbers
 
     def getRandomNumbers(self):
-        numbers = self.resultIntegerMultiplicativeMethod()
+            
         randomNumbersMultivicate = [
-            numbers,
-            self.resultUniformMultiplicativeMethod(numbers)
+            self.resultIntegerMultiplicativeMethod(),
+            self.resultUniformMultiplicativeMethod()
         ]
         return randomNumbersMultivicate
     
@@ -68,11 +68,10 @@ class RandomNumberGenerator:
     def generateRandomMultiplicativeNumbers(self):
         n = self.n
         mt = RandomNumberMultiplicativeGenerator(self.a,self.m,self.zi,self.n)
+        RVG = RandomVariateGenerator(self.MultiplicativeMethod.resultUniformMultiplicativeMethod())
     
         randomNumbers = mt.getRandomNumbers()
-        RVG = RandomVariateGenerator(randomNumbers[1])
-
-        randomNumbers.append(RVG.getResultEksponen())
+        randomNumbers.append(RVG.getResultCDF())
 
         ZiRandomNumbers = randomNumbers[0]
         UiRandomNumbers = randomNumbers[1]
@@ -115,7 +114,7 @@ class RandomVariateGenerator:
     def __init__(self, uniformNumbers):
         self.uniformNumbers = uniformNumbers
     
-    def getResultEksponen(self):
+    def getResultCDF(self):
         cdfNumbers = []
         for number in self.uniformNumbers:
             result = None
@@ -131,4 +130,5 @@ m = 128
 z0 = 12357
 n = 5
 rng = RandomNumberGenerator(a,m,z0,n)
+# rng.generateRandomLCGTableNumbers()
 rng.generateRandomMultiplicativeNumbers()
