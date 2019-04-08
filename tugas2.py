@@ -3,49 +3,6 @@ import math
 # Nama : Lukmannudin
 # Kelas : MOSI-08
 # Catatan : Dijalankan di python versi 3
-class RandomNumberLCGGenerator:
-    def __init__(self, a, c, m, z0, n):
-        self.a = a
-        self.c = c
-        self.m = m
-        self.zi = z0
-        self.n = n
-        self.randomNumbersIntegerAndUniform = []
-
-    def countWithLCGMethod(self,zi):
-        # zi = nilai bilangan ke-i dari deretnya (RN yang baru)
-        result = (self.a*zi+self.c) % self.m
-        return result
-    
-
-    def resultIntegerLCGMethod(self):
-        randomIntegerNumbers = []
-        i=0
-        while i <= self.n:
-            self.zi = self.countWithLCGMethod(self.zi)
-            randomIntegerNumbers.append(self.zi)
-            i = i +1
-
-        return randomIntegerNumbers
-
-    def resultUniformLCGMethod(self):
-        randomUniformNumbers = []
-        resultUniform = []
-        randomIntegerNumbers = self.resultIntegerLCGMethod()
-
-        for integerNumber in randomIntegerNumbers:
-            resultUniform = integerNumber / self.m
-            randomUniformNumbers.append(resultUniform)
-
-        return randomUniformNumbers
-    
-    def getRandomNumbers(self):
-            
-        randomNumbersLCG = [
-            self.resultIntegerLCGMethod(),
-            self.resultUniformLCGMethod()
-        ]
-        return randomNumbersLCG
 
 class RandomNumberMultiplicativeGenerator:
     def __init__(self, a, m, z0, n):
@@ -100,7 +57,6 @@ class RandomNumberGenerator:
 
     def __init__(self,a,m,z0,n,c=0):
         self.initilize(a,c,m,z0,n)
-        self.LCGMethod = RandomNumberLCGGenerator(a,c,m,z0,n)
         self.MultiplicativeMethod = RandomNumberMultiplicativeGenerator(a,m,z0,n)
         
     def initilize(self,a,c,m,z0,n):
@@ -108,35 +64,7 @@ class RandomNumberGenerator:
         self.c = c
         self.m = m 
         self.zi = z0
-        self.n = n
-  
-    def generateRandomLCGTableNumbers(self):
-        if (self.a < self.m and self.c < self.m):
-            LCG = RandomNumberLCGGenerator(self.a,self.c,self.m,self.zi,self.n)
-            RVG = RandomVariateGenerator(self.MultiplicativeMethod.resultUniformMultiplicativeMethod())
-
-            n = self.n
-            randomNumbers = LCG.getRandomNumbers()
-            randomNumbers.append(RVG.getResultCDF())
-             
-            ZiRandomNumbers = randomNumbers[0]
-            UiRandomNumbers = randomNumbers[1]
-            XiRandomNumbers = randomNumbers[2]
-            ZiLoopedPosition = self.periodikCheck(ZiRandomNumbers)
-            UiLoopedPosition = self.periodikCheck(UiRandomNumbers)
-            XiLoopedPosition = self.periodikCheck(XiRandomNumbers)
-            if (ZiLoopedPosition + UiLoopedPosition + XiLoopedPosition) > 0 :
-                print("Zi terulang di posisi "+str(ZiLoopedPosition))
-                print("Ui terulang di posisi "+str(UiLoopedPosition))
-                print("Xi terulang di posisi "+str(XiLoopedPosition))
-
-            print("|\ti\t|\tZi\t|\tUi\t|\tXi\t|")
-            for i in range(0,n):
-                print("|\t{}\t|  {:.0f}\t\t|  {:.4f}\t|  {:.4f}\t|"
-                    .format(i+1, randomNumbers[0][i], randomNumbers[1][i],randomNumbers[2][i])
-                    )
-        else:
-            print("Seharusnya a < m dan c < m")       
+        self.n = n 
 
     def generateRandomMultiplicativeNumbers(self):
         n = self.n
@@ -188,7 +116,7 @@ class RandomVariateGenerator:
         cdfNumbers = []
         for number in self.uniformNumbers:
             result = None
-            result = -0.1 * math.log(1-number)
+            result = -0.1 * math.log(number)
             cdfNumbers.append(result)
 
         return cdfNumbers
@@ -204,11 +132,10 @@ class RandomVariateGenerator:
 
 
 a = 7
-c = 23 
 m = 128
 z0 = 12357
 n = 5
-rng = RandomNumberGenerator(a,m,z0,n,c)
+rng = RandomNumberGenerator(a,m,z0,n)
 # rng.generateRandomLCGTableNumbers()
 rng.generateRandomMultiplicativeNumbers()
 print(rng.getAverageMultiplicative())
